@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pinnacle Photos BD - Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="screen active">
+            <div class="login-box">
+                <h1>🎯 Pinnacle Photos BD</h1>
+                <p class="subtitle">Admin Panel Login</p>
+                <form id="loginForm">
+                    <input type="password" id="masterPassword" placeholder="Enter Master Password" required>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+                <div id="loginError" class="error-message"></div>
+            </div>
+        </div>
+
+        <!-- Main Panel -->
+        <div id="mainPanel" class="screen">
+            <div class="header">
+                <h1>📸 Pinnacle Photos BD</h1>
+                <button class="btn btn-logout" onclick="logout()">Logout</button>
+            </div>
+
+            <div class="segments-grid">
+                <!-- Segment 1: Photo of the Month -->
+                <div class="segment-card" onclick="openSegment(1)">
+                    <div class="segment-icon">🏆</div>
+                    <h3>Photo of the Month</h3>
+                    <p>Best photo this month</p>
+                </div>
+
+                <!-- Segment 2: Signature Moment of the Day -->
+                <div class="segment-card" onclick="openSegment(2)">
+                    <div class="segment-icon">⭐</div>
+                    <h3>Signature Moment</h3>
+                    <p>Moment of the Day</p>
+                </div>
+
+                <!-- Segment 3: Weekly Best Photo -->
+                <div class="segment-card" onclick="openSegment(3)">
+                    <div class="segment-icon">📅</div>
+                    <h3>Weekly Best Photo</h3>
+                    <p>Best of the week</p>
+                </div>
+
+                <!-- Segment 4: Theme Best Photo -->
+                <div class="segment-card" onclick="openSegment(4)">
+                    <div class="segment-icon">🎨</div>
+                    <h3>Theme Best Photo</h3>
+                    <p>Theme category</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Segment Editor Screen -->
+        <div id="segmentEditor" class="screen">
+            <div class="editor-header">
+                <button class="btn btn-back" onclick="backToMain()">← Back</button>
+                <h2 id="segmentTitle"></h2>
+            </div>
+
+            <div id="passwordPrompt" class="password-prompt">
+                <div class="prompt-box">
+                    <p>Enter Segment Password</p>
+                    <input type="password" id="segmentPassword" placeholder="Password">
+                    <button class="btn btn-primary" onclick="verifySegmentPassword()">Unlock</button>
+                    <div id="passwordError" class="error-message"></div>
+                </div>
+            </div>
+
+            <div id="segmentContent" class="segment-content" style="display: none;">
+                <div class="photo-template">
+                    <div class="template-header">
+                        <div class="photographer-info">
+                            <input type="text" id="photographerName" placeholder="Photographer Name" class="input-field">
+                            <input type="date" id="photoDate" class="input-field">
+                        </div>
+                    </div>
+
+                    <div class="photo-area">
+                        <input type="file" id="photoUpload" accept="image/*" onchange="previewPhoto()">
+                        <div id="photoPreview" class="photo-preview">
+                            <p>Click to upload photo</p>
+                        </div>
+                    </div>
+
+                    <div class="template-footer">
+                        <textarea id="photoDescription" placeholder="Photo Description" class="input-field"></textarea>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="saveSegmentPhoto()">Save Photo</button>
+                        <button class="btn btn-secondary" onclick="clearSegment()">Clear</button>
+                    </div>
+                </div>
+
+                <div id="displayArea" class="display-area">
+                    <h3>Current Display</h3>
+                    <div id="currentDisplay" class="current-display"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
