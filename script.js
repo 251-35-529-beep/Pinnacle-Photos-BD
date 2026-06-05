@@ -14,15 +14,27 @@ const SEGMENT_NAMES = {
     4: "Theme Best Photo"
 };
 
+// Sub-segment data for Signature Moment
+const SUB_SEGMENTS = {
+    2: {
+        landscape: "🏞️ Landscape",
+        portrait: "👤 Portrait"
+    }
+};
+
 // Data Storage
 let segmentData = {
     1: { photographer: "", date: "", photo: "", description: "" },
-    2: { photographer: "", date: "", photo: "", description: "" },
+    2: { 
+        landscape: { photographer: "", date: "", photo: "", description: "" },
+        portrait: { photographer: "", date: "", photo: "", description: "" }
+    },
     3: { photographer: "", date: "", photo: "", description: "" },
     4: { photographer: "", date: "", photo: "", description: "" }
 };
 
 let currentSegment = null;
+let currentSubSegment = null;
 
 // Load data from localStorage
 function loadData() {
@@ -66,12 +78,45 @@ function switchScreen(fromScreen, toScreen) {
 // Open Segment
 function openSegment(segmentNumber) {
     currentSegment = segmentNumber;
-    document.getElementById("segmentTitle").textContent = SEGMENT_NAMES[segmentNumber];
+    currentSubSegment = null;
+    
+    // Check if segment has sub-segments
+    if (SUB_SEGMENTS[segmentNumber]) {
+        document.getElementById("segmentTitle").textContent = SEGMENT_NAMES[segmentNumber];
+        document.getElementById("passwordPrompt").style.display = "block";
+        document.getElementById("segmentContent").style.display = "none";
+        document.getElementById("subSegmentSelector").style.display = "block";
+        document.getElementById("segmentPassword").value = "";
+        document.getElementById("passwordError").classList.remove("show");
+        
+        // Show sub-segment buttons
+        const subSegmentDiv = document.getElementById("subSegmentButtons");
+        subSegmentDiv.innerHTML = "";
+        for (const [key, label] of Object.entries(SUB_SEGMENTS[segmentNumber])) {
+            const btn = document.createElement("button");
+            btn.className = "btn btn-primary";
+            btn.textContent = label;
+            btn.onclick = () => selectSubSegment(key);
+            subSegmentDiv.appendChild(btn);
+        }
+    } else {
+        document.getElementById("segmentTitle").textContent = SEGMENT_NAMES[segmentNumber];
+        document.getElementById("passwordPrompt").style.display = "block";
+        document.getElementById("segmentContent").style.display = "none";
+        document.getElementById("subSegmentSelector").style.display = "none";
+        document.getElementById("segmentPassword").value = "";
+        document.getElementById("passwordError").classList.remove("show");
+    }
+    
+    switchScreen("mainPanel", "segmentEditor");
+}
+
+// Select Sub-Segment
+function selectSubSegment(subSegment) {
+    currentSubSegment = subSegment;
     document.getElementById("passwordPrompt").style.display = "block";
-    document.getElementById("segmentContent").style.display = "none";
     document.getElementById("segmentPassword").value = "";
     document.getElementById("passwordError").classList.remove("show");
-    switchScreen("mainPanel", "segmentEditor");
 }
 
 // Verify Segment Password
@@ -82,6 +127,7 @@ function verifySegmentPassword() {
     if (password === SEGMENT_PASSWORDS[currentSegment]) {
         errorDiv.classList.remove("show");
         document.getElementById("passwordPrompt").style.display = "none";
+        document.getElementById("subSegmentSelector").style.display = "none";
         document.getElementById("segmentContent").style.display = "block";
         loadSegmentData();
     } else {
@@ -92,7 +138,14 @@ function verifySegmentPassword() {
 
 // Load Segment Data
 function loadSegmentData() {
-    const data = segmentData[currentSegment];
+    let data;
+    
+    if (currentSubSegment) {
+        data = segmentData[currentSegment][currentSubSegment];
+    } else {
+        data = segmentData[currentSegment];
+    }
+    
     document.getElementById("photographerName").value = data.photographer || "";
     document.getElementById("photoDate").value = data.date || "";
     document.getElementById("photoDescription").value = data.description || "";
@@ -117,7 +170,11 @@ function previewPhoto() {
             const preview = document.getElementById("photoPreview");
             preview.innerHTML = `<img src="${e.target.result}" alt="Photo">`;
             // Store temporarily
-            segmentData[currentSegment].photo = e.target.result;
+            if (currentSubSegment) {
+                segmentData[currentSegment][currentSubSegment].photo = e.target.result;
+            } else {
+                segmentData[currentSegment].photo = e.target.result;
+            }
         };
         reader.readAsDataURL(file);
     }
@@ -134,12 +191,21 @@ function saveSegmentPhoto() {
         return;
     }
 
-    segmentData[currentSegment] = {
-        photographer: photographer,
-        date: date,
-        photo: segmentData[currentSegment].photo || "",
-        description: description
-    };
+    if (currentSubSegment) {
+        segmentData[currentSegment][currentSubSegment] = {
+            photographer: photographer,
+            date: date,
+            photo: segmentData[currentSegment][currentSubSegment].photo || "",
+            description: description
+        };
+    } else {
+        segmentData[currentSegment] = {
+            photographer: photographer,
+            date: date,
+            photo: segmentData[currentSegment].photo || "",
+            description: description
+        };
+    }
 
     saveData();
     displaySegmentContent();
@@ -148,7 +214,14 @@ function saveSegmentPhoto() {
 
 // Display Segment Content
 function displaySegmentContent() {
-    const data = segmentData[currentSegment];
+    let data;
+    
+    if (currentSubSegment) {
+        data = segmentData[currentSegment][currentSubSegment];
+    } else {
+        data = segmentData[currentSegment];
+    }
+    
     const displayArea = document.getElementById("currentDisplay");
 
     if (data.photo) {
@@ -174,12 +247,22 @@ function displaySegmentContent() {
 // Clear Segment
 function clearSegment() {
     if (confirm("Are you sure? This will clear all data for this segment.")) {
-        segmentData[currentSegment] = {
-            photographer: "",
-            date: "",
-            photo: "",
-            description: ""
-        };
+        if (currentSubSegment) {
+            segmentData[currentSegment][currentSubSegment] = {
+                photographer: "",
+                date: "",
+                photo: "",
+                description: ""
+            };
+        } else {
+            segmentData[currentSegment] = {
+                photographer: "",
+                date: "",
+                photo: "",
+                description: ""
+            };
+        }
+        
         saveData();
         document.getElementById("photographerName").value = "";
         document.getElementById("photoDate").value = "";
@@ -192,6 +275,7 @@ function clearSegment() {
 // Back to Main
 function backToMain() {
     currentSegment = null;
+    currentSubSegment = null;
     switchScreen("segmentEditor", "mainPanel");
 }
 
