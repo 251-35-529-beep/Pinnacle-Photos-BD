@@ -220,6 +220,41 @@ body {
     flex: 1;
 }
 
+/* Sub-Segment Selector */
+.sub-segment-selector {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+}
+
+.sub-segment-box {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sub-segment-box p {
+    color: #333;
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+.sub-segment-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.sub-segment-buttons .btn {
+    min-width: 150px;
+    padding: 15px 30px;
+    font-size: 1.05em;
+}
+
 .password-prompt {
     background: white;
     border-radius: 15px;
@@ -398,5 +433,13 @@ body {
 
     .login-box {
         padding: 30px 20px;
+    }
+
+    .sub-segment-buttons {
+        flex-direction: column;
+    }
+
+    .sub-segment-buttons .btn {
+        width: 100%;
     }
 }
